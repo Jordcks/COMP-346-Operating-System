@@ -1,0 +1,13 @@
+These following reasons can explain the different running times:
+1. External program or processes running outside this software may
+have an impact on the individual thread running time each time we run
+our program.
+2. There is a difference in running times of the Normal Runs (with the
+provided account.txt and transaction.txt) because of the Java
+Scheduler. Each thread is signal to the Java Virtual Machine as
+needing to run, but ultimately, we cannot control how the scheduler
+assigns execution time to the threads. Therefore, some threads on
+certain run will get execution time earlier than others.
+3. Hardware performances can also impact thread running time, if the
+program is running with different CPUs.
+4. These difference can also depend on the performance of the CPU.
