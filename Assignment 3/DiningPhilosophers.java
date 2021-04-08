@@ -1,3 +1,5 @@
+import java.util.InputMismatchException;
+
 /**
  * Class DiningPhilosophers
  * The main starter.
@@ -46,7 +48,21 @@ public class DiningPhilosophers
 			 * Should be settable from the command line
 			 * or the default if no arguments supplied.
 			 */
-			int iPhilosophers = DEFAULT_NUMBER_OF_PHILOSOPHERS;
+			int iPhilosophers;
+			
+			try {
+				int number = Integer.parseInt(argv[0]);
+				if(number >= 1) {
+					iPhilosophers = number;
+				} else { 				// If number is less than 1 the value is not accepted.
+					throw new InputMismatchException();
+				}
+								
+			} catch(Exception e) {
+				System.out.println("Default number of philosophjer will be used.");
+				iPhilosophers = DEFAULT_NUMBER_OF_PHILOSOPHERS;
+			}
+			
 
 			// Make the monitor aware of how many philosophers there are
 			soMonitor = new Monitor(iPhilosophers);
