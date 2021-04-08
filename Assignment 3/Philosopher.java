@@ -148,5 +148,4 @@ public class Philosopher extends BaseThread
 		);
 	}
 }
-
 // EOF
