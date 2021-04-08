@@ -11,6 +11,10 @@ public class Monitor
 	 * Data members
 	 * ------------
 	 */
+	private enum Status{eating, hungry, thinking};
+	private boolean isTalking=false;
+	private int numOfChopstick;
+	private Status[] philosopher_state;
 
 
 	/**
@@ -18,7 +22,13 @@ public class Monitor
 	 */
 	public Monitor(int piNumberOfPhilosophers)
 	{
-		// TODO: set appropriate number of chopsticks based on the # of philosophers
+		//set appropriate number of chopsticks based on the # of philosophers
+		this.numOfChopstick= piNumberOfPhilosophers;
+		philosopher_state=new Status[piNumberOfPhilosophers];
+		for (int i=0; i < piNumberOfPhilosophers; i++) {
+			philosopher_state[i]=Status.thinking;
+		}
+		isTalking=false;
 	}
 
 	/*
@@ -26,7 +36,16 @@ public class Monitor
 	 * User-defined monitor procedures
 	 * -------------------------------
 	 */
-
+	public synchronized void test(final int piTID)
+	{
+		if (philosopher_state[(piTID + 1) % numOfChopstick] != Status.eating &&
+				philosopher_state[(piTID-1 + numOfChopstick) % numOfChopstick] != Status.eating &&
+						philosopher_state[piTID] == Status.hungry)
+		{
+			philosopher_state[piTID] = Status.eating;
+			notifyAll();
+		}
+	}
 	/**
 	 * Grants request (returns) to eat when both chopsticks/forks are available.
 	 * Else forces the philosopher to wait()
@@ -34,6 +53,19 @@ public class Monitor
 	public synchronized void pickUp(final int piTID)
 	{
 		// ...
+		int position=piTID-1;
+		philosopher_state[position]=Status.hungry;
+		test(position);
+		
+		if(philosopher_state[position]!= Status.eating) {
+			try {
+				wait();
+				pickUp(piTID);
+			} catch (InterruptedException e) {
+				System.out.println("The Philosopher No." + piTID + " cannot pick up fork!");
+			}
+		}
+		
 	}
 
 	/**
@@ -43,6 +75,10 @@ public class Monitor
 	public synchronized void putDown(final int piTID)
 	{
 		// ...
+		int position=piTID-1;
+		philosopher_state[position]=Status.thinking;
+		notifyAll();
+		
 	}
 
 	/**
@@ -52,6 +88,16 @@ public class Monitor
 	public synchronized void requestTalk()
 	{
 		// ...
+		if(isTalking) {
+			try {
+				wait();
+				requestTalk();
+			} catch(InterruptedException e ) {
+				System.out.println("The Philosopher cannot talk as someone is already talking!");
+			}
+		}
+		isTalking=true;
+		
 	}
 
 	/**
@@ -61,6 +107,8 @@ public class Monitor
 	public synchronized void endTalk()
 	{
 		// ...
+		isTalking=false;
+		notifyAll();
 	}
 }
 
